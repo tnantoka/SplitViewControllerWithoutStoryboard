@@ -10,7 +10,7 @@ import UIKit
 
 class DetailViewController: UIViewController {
 
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
+    weak var detailDescriptionLabel: UILabel!
 
 
     var detailItem: AnyObject? {
@@ -32,6 +32,19 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        self.view.backgroundColor = UIColor.whiteColor()
+
+        let detailDescriptionLabel = UILabel()
+        self.detailDescriptionLabel = detailDescriptionLabel
+        detailDescriptionLabel.textAlignment = .Center
+        detailDescriptionLabel.autoresizingMask = .FlexibleBottomMargin | .FlexibleTopMargin | .FlexibleWidth
+        detailDescriptionLabel.frame = CGRect(
+            x: 0.0,
+            y: self.view.center.y,
+            width: self.view.bounds.size.width,
+            height: 17.0)
+        self.view.addSubview(detailDescriptionLabel)
+
         self.configureView()
     }
 

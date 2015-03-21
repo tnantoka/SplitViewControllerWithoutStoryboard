@@ -14,12 +14,27 @@ class MasterViewController: UITableViewController {
     var objects = [AnyObject]()
 
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override init() {
+        super.init()
         if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
             self.clearsSelectionOnViewWillAppear = false
             self.preferredContentSize = CGSize(width: 320.0, height: 600.0)
         }
+    }
+
+    // 'required' initializer 'init(coder:)' must be provided by subclass of 'UITableViewController'
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // fatal error: use of unimplemented initializer 'init(style:)' for class 'SplitViewControllerWithoutStoryboard.MasterViewController'
+    override init(style: UITableViewStyle) {
+        super.init(style: style)
+    }
+
+    // fatal error: use of unimplemented initializer 'init(nibName:bundle:)' for class 'SplitViewControllerWithoutStoryboard.MasterViewController'
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
     override func viewDidLoad() {
@@ -33,6 +48,9 @@ class MasterViewController: UITableViewController {
             let controllers = split.viewControllers
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
+        
+        // Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'unable to dequeue a cell with identifier Cell - must register a nib or a class for the identifier or connect a prototype cell in a storyboard'
+        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "Cell")
     }
 
     override func didReceiveMemoryWarning() {
@@ -44,20 +62,6 @@ class MasterViewController: UITableViewController {
         objects.insert(NSDate(), atIndex: 0)
         let indexPath = NSIndexPath(forRow: 0, inSection: 0)
         self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-    }
-
-    // MARK: - Segues
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showDetail" {
-            if let indexPath = self.tableView.indexPathForSelectedRow() {
-                let object = objects[indexPath.row] as NSDate
-                let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                controller.navigationItem.leftItemsSupplementBackButton = true
-            }
-        }
     }
 
     // MARK: - Table View
@@ -92,6 +96,17 @@ class MasterViewController: UITableViewController {
         }
     }
 
-
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if let controller = detailViewController {
+            let object = objects[indexPath.row] as NSDate
+            controller.detailItem = object
+            
+            if let splitViewController = self.splitViewController {
+                if splitViewController.collapsed {
+                    splitViewController.showDetailViewController(controller, sender: nil)
+                }
+            }
+        }
+    }
 }
 
